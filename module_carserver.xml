@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_carserver" default="compile.module.carserver">
+  <dirname property="module.carserver.basedir" file="${ant.file.module_carserver}"/>
+  
+  <property name="module.jdk.home.carserver" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.carserver" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.carserver" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.carserver" value="-encoding UTF-8 -source 1.5 -target 1.5 ${compiler.args}"/>
+  
+  <property name="carserver.output.dir" value="${module.carserver.basedir}/out/production/carserver"/>
+  <property name="carserver.testoutput.dir" value="${module.carserver.basedir}/out/test/carserver"/>
+  
+  <path id="carserver.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="carserver.module.production.classpath">
+    <path refid="${module.jdk.classpath.carserver}"/>
+    <path refid="library.tomcat_8.0.33.classpath"/>
+    <path refid="library.jsp-api.classpath"/>
+  </path>
+  
+  <path id="carserver.runtime.production.module.classpath">
+    <pathelement location="${carserver.output.dir}"/>
+    <path refid="library.jsp-api.classpath"/>
+  </path>
+  
+  <path id="carserver.module.classpath">
+    <path refid="${module.jdk.classpath.carserver}"/>
+    <pathelement location="${carserver.output.dir}"/>
+    <path refid="library.tomcat_8.0.33.classpath"/>
+    <path refid="library.jsp-api.classpath"/>
+  </path>
+  
+  <path id="carserver.runtime.module.classpath">
+    <pathelement location="${carserver.testoutput.dir}"/>
+    <pathelement location="${carserver.output.dir}"/>
+    <path refid="library.tomcat_8.0.33.classpath"/>
+    <path refid="library.jsp-api.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.carserver">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.carserver">
+    <patternset refid="excluded.from.module.carserver"/>
+  </patternset>
+  
+  <path id="carserver.module.sourcepath">
+    <dirset dir="${module.carserver.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.carserver" depends="compile.module.carserver.production,compile.module.carserver.tests" description="Compile module carserver"/>
+  
+  <target name="compile.module.carserver.production" depends="register.custom.compilers" description="Compile module carserver; production classes">
+    <mkdir dir="${carserver.output.dir}"/>
+    <javac2 destdir="${carserver.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.carserver}/javac">
+      <compilerarg line="${compiler.args.carserver}"/>
+      <bootclasspath refid="carserver.module.bootclasspath"/>
+      <classpath refid="carserver.module.production.classpath"/>
+      <src refid="carserver.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.carserver"/>
+    </javac2>
+    
+    <copy todir="${carserver.output.dir}">
+      <fileset dir="${module.carserver.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.carserver.tests" depends="register.custom.compilers,compile.module.carserver.production" description="compile module carserver; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.carserver" description="cleanup module">
+    <delete dir="${carserver.output.dir}"/>
+    <delete dir="${carserver.testoutput.dir}"/>
+  </target>
+</project>
